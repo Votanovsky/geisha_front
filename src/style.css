@@ -42,12 +42,23 @@ a {
 .slider {
   
   background: #000;
-  background: url('../static/media/ttr.jpg') 50% 50% no-repeat;
-  background-size: cover;
+  /* background: url('../static/media/ttr.jpg') 50% 50% no-repeat; */
   width: 100%;
   height: 100vh;
   position: relative;
   overflow: hidden;
+  padding: 10px;
+}
+
+.slider_bg {
+  width: 100%;
+  height: 100%;
+}
+
+.slider_bg-img {
+  width: 100%;
+  height: 100%;
+
 }
 .slider__image--wrapper {
   position: absolute;
@@ -407,4 +418,70 @@ body::-webkit-scrollbar-thumb {
   background: rgb(210,9,1);
   background: linear-gradient(108deg, rgba(210,9,1,1) 0%, rgba(240,26,0,1) 64%, rgba(254,167,0,1) 100%);
   border: 2px solid #fff;
+}
+
+
+.certificate {
+  background: #fff;
+  min-height: 100vh; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  position: relative;
+
+  
+}
+
+.certificate_title {
+  font-family: 'Monterchi';
+  position: absolute; 
+  font-size: 72px; 
+  color: #000;
+  
+  /* mix-blend-mode: difference; */
+}
+.certificate_title--one {
+  font-family: 'Monterchi';
+  position: absolute; 
+  left: 100px; 
+  top: 15%; 
+  font-size: 82px; 
+  width: 70vw;
+}
+.certificate_title--two {
+  font-family: 'Monterchi';
+  position: absolute; 
+  right: 200px; 
+  top: 38%; 
+  font-size: 172px; 
+  color: #000;
+  /* mix-blend-mode: difference; */
+}
+
+.more {
+  font-family: 'Jost';
+  font-size: 36px;
+  margin-left: 300px;
+  margin-top: 10px;
+  text-transform: lowercase;
+  display: flex;
+  align-items: center;
+  color: #000;
+  cursor: pointer;
+  
+  
+}
+.more span {
+  text-transform: uppercase;
+  font-size: 18px;
+  margin-right: 16px;
+}
+.more div {
+  width: 80px;
+  height: 80px;
+  background: #1C1A1A;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
