@@ -121,10 +121,14 @@
         <div style="width: 100%; height: 100vh; background: black; position: relative; overflow: hidden;">
             <!-- <canvas class="webgl"></canvas> -->
             <div style="overflow: hidden;" class="video">
-                <video id="video1" src="../static/three.mp4" muted autoplay></video>
+                <video id="video1" muted autoplay playsinline>
+                    <source src="../static/three.mp4" type="video/mp4">
+                </video>
             </div>
             <div class="video">
-                <video id="video3" src="../static/four_s.mp4" muted style="opacity: 0;"></video>
+                <video id="video3" muted autoplay playsinline>
+                    <source src="../static/four_s.mp4" type="video/mp4">
+                </video>
             </div>
 
             <div class="language">
