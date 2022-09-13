@@ -7,19 +7,18 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 
 import gsap from 'gsap'
 
-console.log(gsap);
-
-
 import t from '../../static/three_end.jpg'
-import t1 from '../../static/four_first.jpg'
-import t2 from '../../static/four_end.jpg'
+import t1 from '../../static/three_first.jpg'
+import t2 from '../../static/three_end.jpg'
 import t3 from '../../static/three_first.jpg'
 
-const video = document.getElementById('video3')
-const video2 = document.getElementById('video1')
+const video = document.getElementById('video1')
+const video2 = document.getElementById('video3')
+
+
 
 // Canvas
-const canvas = document.querySelector('canvas.webgl')
+const canvas = document.querySelector('.webgl')
 
 // Scene
 const scene = new THREE.Scene()
@@ -27,6 +26,9 @@ const scene = new THREE.Scene()
 // Lights
 
 const pointLight = new THREE.PointLight(0xffffff, 0.1)
+// pointLight.position.x = 2
+// pointLight.position.y = 3
+// pointLight.position.z = 4
 pointLight.position.set(2, 3, 4)
 scene.add(pointLight)
 
@@ -63,6 +65,10 @@ const camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHei
 camera.position.set(0,0,1500);
 scene.add(camera)
 
+// Controls
+// const controls = new OrbitControls(camera, canvas)
+// controls.enableDamping = true
+
 /**
  * Renderer
  */
@@ -74,16 +80,36 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+let bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+const settings = initSettings()
 // Bloom
 function postProcessing() {
-    const renderScene = new RenderPass( scene, camera );
-    const bloomPass = new UnrealBloomPass( new THREE.Vector2( sizes.width, sizes.height ), 0, 0, 0 );
-    const composer = new EffectComposer( renderer );
+    let renderScene = new RenderPass( scene, camera );
+
+    // let bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
+    // bloomPass.threshold = params.bloomThreshold;
+    // bloomPass.strength = params.bloomStrength;
+    // bloomPass.radius = params.bloomRadius;
+    bloomPass.strength = settings.bloomStrength;
+    
+    let composer = new EffectComposer( renderer );
     composer.addPass( renderScene );
     composer.addPass( bloomPass );
     
     return composer 
 }
+
+function initSettings() {
+    const settings = {
+        distortion: 0,
+        bloomStrength: 0,
+        bloomRadius: 0,
+        bloomThreshold: 0
+    }
+
+    return settings
+}
+
 
 /**
  * Animate
@@ -94,7 +120,7 @@ const clock = new THREE.Clock()
 let utime = 0;
 
 const composer = postProcessing()
-const bloomPass = composer.passes.at(-1)
+
 
 const tick = () =>
 {
@@ -102,9 +128,17 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
 
     utime+=0.05
+    // Update Orbital Controls
+    // controls.update()
 
     // Render
     composer.render()
+    // renderer.render(scene, camera)
+
+    // Call tick again on the next frame
+    composer.passes[1].strength = settings.bloomStrength
+    composer.passes[1].radius = settings.bloomRadius
+    composer.passes[1].threshold = settings.bloomThreshold
     
     updateUniforms()
     // console.log(composer.passes[1].strength)
@@ -119,6 +153,8 @@ function updateUniforms() {
         if (child instanceof THREE.Points
             && child.material.type === 'ShaderMaterial') {
             child.material.uniforms.time.value = utime;
+            // child.material.uniforms.distortion.value = settings.distortion;
+            // bloomPass.strength = settings.bloomStrength;
             child.material.needsUpdate = true;
             
         }
@@ -127,7 +163,7 @@ function updateUniforms() {
 }
 
 // Objects
-const geometry = new THREE.PlaneBufferGeometry( 1920, 1080, 700, 600);
+const geometry = new THREE.PlaneBufferGeometry( 480*1.745, 820*1.745, 480, 820);
 
 // Materials
 const material = new THREE.ShaderMaterial({
@@ -139,8 +175,8 @@ const material = new THREE.ShaderMaterial({
         time: {type: "float", value: utime},
         progress: {type: "float", value: utime},
         distortion: {type: "float", value: 0},
-        t: {type: "t", value: new THREE.TextureLoader().load(t2)},
-        t1: {type: "t", value: new THREE.TextureLoader().load(t3)},
+        t: {type: "t", value: new THREE.TextureLoader().load(t)},
+        t1: {type: "t", value: new THREE.TextureLoader().load(t2)},
         resolution: {tupe: "v4", value: new THREE.Vector4()},
         uvRate1: {
             value: new THREE.Vector2(1,1)
@@ -161,7 +197,7 @@ const material1 = new THREE.ShaderMaterial({
         time: {type: "float", value: utime},
         progress: {type: "float", value: utime},
         distortion: {type: "float", value: 0},
-        t: {type: "t", value: new THREE.TextureLoader().load(t)},
+        t: {type: "t", value: new THREE.TextureLoader().load(t3)},
         t1: {type: "t", value: new THREE.TextureLoader().load(t1)},
         resolution: {tupe: "v4", value: new THREE.Vector4()},
         uvRate1: {
@@ -177,24 +213,7 @@ const material1 = new THREE.ShaderMaterial({
 // Mesh
 const mesh = new THREE.Points(geometry,material)
 const mesh1 = new THREE.Points(geometry,material1)
-if(screen.width >= 370 && screen.height >= 667)
-{
-    const newScale = [.9, .88, 1]
-    mesh.geometry.scale(...newScale)
-    mesh1.geometry.scale(...newScale)
-}
-if(screen.width >= 390 && screen.height >= 844)
-{
-    const newScale = [.9, .92, 1]
-    mesh.geometry.scale(...newScale)
-    mesh1.geometry.scale(...newScale)
-}
-if(screen.width >= 820)
-{
-    const newScale = [1.20, 1.30, 1]
-    mesh.geometry.scale(...newScale)
-    mesh1.geometry.scale(...newScale)
-}
+
 
 // gsap ===========
 video.addEventListener('ended', ()=> {
@@ -205,7 +224,7 @@ video.addEventListener('ended', ()=> {
     })
     gsap.to(material.uniforms.distortion, {
         duration: 3,
-        value:2,
+        value:1.5,
         ease: "power2.inOut"
     })
 
@@ -217,7 +236,7 @@ video.addEventListener('ended', ()=> {
 
     gsap.to(bloomPass, {
         duration: 2,
-        strength:3,
+        strength:5,
         ease: "power2.in"
     })
     gsap.to(material.uniforms.distortion, {
@@ -243,6 +262,12 @@ video.addEventListener('ended', ()=> {
                 value:0,
             })
             scene.clear()
+            // video.currentTime = 0;
+            // video.play();
+            // gsap.to(video, {
+            //     duration: 0.1,
+            //     opacity: 1
+            // })
         }
     })
 })
@@ -267,7 +292,7 @@ video2.addEventListener('ended', ()=> {
 
     gsap.to(bloomPass, {
         duration: 2,
-        strength:2,
+        strength:5,
         ease: "power2.in"
     })
     gsap.to(material1.uniforms.distortion, {
@@ -293,6 +318,12 @@ video2.addEventListener('ended', ()=> {
                 value:0,
             })
             scene.clear()
+            // video.currentTime = 0;
+            // video.play();
+            // gsap.to(video, {
+            //     duration: 0.1,
+            //     opacity: 1
+            // })
         }
     })
 })
